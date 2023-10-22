@@ -29,5 +29,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	internal.BeginListener(config)
+	err = internal.BeginListener(config)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
