@@ -1,0 +1,9 @@
+{
+	"pathToCertFile": "server.crt",
+	"pathToKeyFile": "server.key",
+	"beginDate": "1698011077",
+	"endDate":   "1698011078",
+	"outputFile": "/samples/test.csv",
+	"indexFile":  "/samples/sample.html",
+	"surveyFields": ["farts", "farts2", "farts3"]
+}
