@@ -1,3 +1,10 @@
+/*
+TODO:
+Get CSV writing complete
+Detect Duplicates
+Parse the survey fields
+*/
+
 package main
 
 import (

@@ -22,3 +22,5 @@ go.work
 
 /merlin
 *.swp
+/server.crt
+/server.key
