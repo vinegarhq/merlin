@@ -6,6 +6,7 @@ import (
 )
 
 type Configuration struct {
+	Port           string   // Server port
 	PathToCertFile string   // please use absolute paths
 	PathToKeyFile  string   // please use absolute paths
 	BeginDate      int      // beginning date in epoch

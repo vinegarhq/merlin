@@ -14,6 +14,9 @@ func serveIndexPage(config *Configuration, w http.ResponseWriter, r *http.Reques
 	}
 }
 
+func serveTelemRequests(config *Configuration, w http.ResponseWriter, r *http.Request) {
+}
+
 func BeginListener(config *Configuration) error {
 	fmt.Printf("%+v\n", config)
 	mux := http.NewServeMux()
@@ -23,9 +26,14 @@ func BeginListener(config *Configuration) error {
 		},
 	))
 
+	mux.Handle("/submit", http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			serveTelemRequests(config, w, r)
+		},
+	))
+
 	var err error
-	// CHANGE THE PORT NUMBER IN PRODUCTION!!!!!!!
-	err = http.ListenAndServeTLS(":6969", config.PathToCertFile, config.PathToKeyFile, mux)
+	err = http.ListenAndServeTLS(":" + config.Port, config.PathToCertFile, config.PathToKeyFile, mux)
 	if err != nil {
 		return err
 	}
