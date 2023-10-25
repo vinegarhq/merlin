@@ -6,5 +6,5 @@
 	"endDate":   1699011078,
 	"outputFile": "./samples/test.csv",
 	"indexFile":  "./samples/index.html",
-	"surveyFields": ["farts", "farts2", "farts3"]
+	"surveyFields": ["project", "cpu", "gpu", "avx", "distro", "kernel"]
 }

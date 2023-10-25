@@ -1,10 +1,3 @@
-/*
-TODO:
-Get CSV writing complete
-Detect Duplicates
-Parse the survey fields
-*/
-
 package main
 
 import (
@@ -28,7 +21,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Loaded configuration successfully.")
 
+	log.Println("Starting HTTP listener...")
 	err = internal.BeginListener(config)
 	if err != nil {
 		log.Fatal(err)
