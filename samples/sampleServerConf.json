@@ -6,5 +6,6 @@
 	"endDate":   1699011078,
 	"outputFile": "./samples/test.csv",
 	"indexFile":  "./samples/index.html",
-	"surveyFields": ["project", "cpu", "gpu", "avx", "distro", "kernel"]
+	"surveyFields": ["project", "cpu", "gpu", "avx", "distro", "kernel", "inflatpak"],
+	"rateLimit": 0.2
 }

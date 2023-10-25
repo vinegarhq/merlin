@@ -2,6 +2,7 @@ package internal
 
 import (
 	"net/http"
+	tb "github.com/didip/tollbooth/v7"
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
@@ -13,7 +14,7 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 		if contentType == "application/json" {
 			//sanitize the shit HERE
 			// WRITE THE CSV HERE
-			// TODO: Figure out how to stop people from botting this shit
+
 		} else {
 			http.Error(w, "", http.StatusBadRequest)
 		}
@@ -24,8 +25,11 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 
 func BeginListener(config *Configuration) error {
 	mux := http.NewServeMux()
-	mux.Handle("/", http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
+
+	tbLimiter := tb.NewLimiter(config.RateLimit, nil)
+	tbLimiter.SetMethods([]string{"POST"})
+	//NOTE, THE CONFIG BEHIND PROXIES IS DIFFERENT. YOU NEED TO ADD SETIPLOOKUPS
+	mux.Handle("/", tb.LimitFuncHandler(tbLimiter, func(w http.ResponseWriter, r *http.Request) {
 			serve(config, w, r)
 		},
 	))

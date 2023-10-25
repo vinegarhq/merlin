@@ -14,6 +14,7 @@ type Configuration struct {
 	OutputFile     string   // CSV file to record results to
 	IndexFile      string   // User-facing index.html (optional)
 	SurveyFields   []string // Yes, I am aware that this means all survey fields come out as strings, but this can be cleaned up in RStudio.
+	RateLimit      float64      // The number of requests allowed per second
 	CSVHandle      *os.File // Please don't enter anything here!
 }
 
