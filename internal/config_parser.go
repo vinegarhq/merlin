@@ -2,20 +2,21 @@ package internal
 
 import (
 	"encoding/json"
+	"encoding/csv"
 	"os"
+	"log"
 )
 
 type Configuration struct {
 	Port           string   // Server port
 	PathToCertFile string   // please use absolute paths
 	PathToKeyFile  string   // please use absolute paths
-	BeginDate      int      // beginning date in epoch
-	EndDate        int      // end date in epoch
+	BeginDate      int64      // beginning date in epoch
+	EndDate        int64      // end date in epoch
 	OutputFile     string   // CSV file to record results to
 	IndexFile      string   // User-facing index.html (optional)
 	SurveyFields   []string // Yes, I am aware that this means all survey fields come out as strings, but this can be cleaned up in RStudio.
 	RateLimit      float64      // The number of requests allowed per second
-	CSVHandle      *os.File // Please don't enter anything here!
 }
 
 func LoadConfiguration(pathToConfig string) (*Configuration, error) {
@@ -31,11 +32,25 @@ func LoadConfiguration(pathToConfig string) (*Configuration, error) {
 		return &Configuration{}, err
 	}
 
-	newConfig.CSVHandle, err = os.OpenFile(newConfig.OutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
+	csvHandle, err := os.OpenFile(newConfig.OutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return &Configuration{}, err
 	}
 
-	//TODO: add col names to CSV, depending on whether it is at the beginning of file.
+	// Write CSV header if file is blank.
+	// CAUTION: DON'T MIX CSVS WITH DIFFERENT HEADERS
+	info, err := os.Stat(newConfig.OutputFile)
+	if err != nil {
+		return &Configuration{}, err
+	}
+
+	if info.Size() == 0 {
+		writer := csv.NewWriter(csvHandle)
+		defer writer.Flush()
+		writer.Write(newConfig.SurveyFields)
+	} else {
+		log.Println("caution: merlin will not write a header to an existing csv")
+	}
+
 	return newConfig, nil
 }
