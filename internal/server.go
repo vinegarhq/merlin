@@ -2,19 +2,17 @@ package internal
 
 import (
 	tb "github.com/didip/tollbooth/v7"
-	bm "github.com/microcosm-cc/bluemonday"
 	"io"
 	"net/http"
 	"time"
 )
 
-var sanitizer = bm.StrictPolicy()
-
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	switch r.Method {
 	case http.MethodGet:
-		http.ServeFile(w, r, config.IndexFile)
+		w.WriteHeader(http.StatusOK)
+		return
 	case http.MethodPost:
 		contentType := r.Header.Get("Content-type")
 		if contentType == "application/json" && now.Unix() < config.EndDate && now.Unix() > config.BeginDate {
@@ -24,12 +22,8 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-
-			cleanedBody := sanitizer.Sanitize(string(body))
-
-			// test
-			print(cleanedBody)
 			// WRITE THE CSV HERE
+			print(string(body))
 			w.WriteHeader(http.StatusAccepted)
 			return
 		} else {

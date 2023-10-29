@@ -14,7 +14,6 @@ type Configuration struct {
 	BeginDate      int64    `json:"beginDate"`      // beginning date in epoch
 	EndDate        int64    `json:"endDate"`        // end date in epoch
 	OutputFile     string   `json:"outputFile"`     // CSV file to record results to
-	IndexFile      string   `json:"indexFile"`      // User-facing index.html (optional)
 	SurveyFields   []string `json:"surveyFields"`   // Yes, I am aware that this means all survey fields come out as strings, but this can be cleaned up in RStudio.
 	RateLimit      float64  `json:"rateLimit"`      // The number of requests allowed per second
 }
