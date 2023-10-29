@@ -1,22 +1,22 @@
 package internal
 
 import (
-	"encoding/json"
 	"encoding/csv"
-	"os"
+	"encoding/json"
 	"log"
+	"os"
 )
 
 type Configuration struct {
-	Port           string   // Server port
-	PathToCertFile string   // please use absolute paths
-	PathToKeyFile  string   // please use absolute paths
-	BeginDate      int64      // beginning date in epoch
-	EndDate        int64      // end date in epoch
-	OutputFile     string   // CSV file to record results to
-	IndexFile      string   // User-facing index.html (optional)
-	SurveyFields   []string // Yes, I am aware that this means all survey fields come out as strings, but this can be cleaned up in RStudio.
-	RateLimit      float64      // The number of requests allowed per second
+	Port           string   `json:"port"`           // Server port
+	PathToCertFile string   `json:"pathToCertFile"` // please use absolute paths
+	PathToKeyFile  string   `json:"pathToKeyFile"`  // please use absolute paths
+	BeginDate      int64    `json:"beginDate"`      // beginning date in epoch
+	EndDate        int64    `json:"endDate"`        // end date in epoch
+	OutputFile     string   `json:"outputFile"`     // CSV file to record results to
+	IndexFile      string   `json:"indexFile"`      // User-facing index.html (optional)
+	SurveyFields   []string `json:"surveyFields"`   // Yes, I am aware that this means all survey fields come out as strings, but this can be cleaned up in RStudio.
+	RateLimit      float64  `json:"rateLimit"`      // The number of requests allowed per second
 }
 
 func LoadConfiguration(pathToConfig string) (*Configuration, error) {
