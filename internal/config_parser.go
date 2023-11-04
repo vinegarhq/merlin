@@ -46,7 +46,10 @@ func LoadConfiguration(pathToConfig string) (*Configuration, error) {
 	if info.Size() == 0 {
 		writer := csv.NewWriter(csvHandle)
 		defer writer.Flush()
-		writer.Write(newConfig.SurveyFields)
+		err := writer.Write(newConfig.SurveyFields)
+		if err != nil {
+			return &Configuration{}, err
+		}
 	} else {
 		log.Println("caution: merlin will not write a header to an existing csv")
 	}

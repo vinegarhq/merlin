@@ -1,17 +1,17 @@
 package internal
 
 import (
+	"encoding/csv"
+	"encoding/json"
 	tb "github.com/didip/tollbooth/v7"
 	"io"
 	"net/http"
-	"time"
-	"encoding/csv"
 	"os"
-	"encoding/json"
 	"regexp"
+	"time"
 )
 
-func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
+func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexpPointer *regexp.Regexp) {
 	now := time.Now()
 	switch r.Method {
 	// reject all methods other than POST
@@ -40,11 +40,7 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 			// Validate JSON
 			for index, field := range config.SurveyFields {
 				// make sure all fields are filled out and make sure we don't have tampered data
-				match, err := regexp.MatchString(`[,"\\]`, unmarshalledBody[field])
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-
+				match := regexpPointer.MatchString(unmarshalledBody[field])
 				if unmarshalledBody[field] == "" || match {
 					w.WriteHeader(http.StatusBadRequest)
 					return
@@ -63,7 +59,11 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 			// Write the CSV
 			csvWriter := csv.NewWriter(csvHandle)
 			defer csvWriter.Flush()
-			csvWriter.Write(csvBuffer)
+			err = csvWriter.Write(csvBuffer)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
 
 			// 202
 			print("success")
@@ -83,14 +83,19 @@ func BeginListener(config *Configuration) error {
 
 	tbLimiter := tb.NewLimiter(config.RateLimit, nil)
 	tbLimiter.SetMethods([]string{"POST"})
+
+	regexpPointer, err := regexp.Compile(`[,"\\]`)
+	if err != nil {
+		return err
+	}
+
 	//NOTE, THE CONFIG BEHIND PROXIES IS DIFFERENT. YOU NEED TO ADD SETIPLOOKUPS
 	// See tollbooth docs for more info
 	mux.Handle("/", tb.LimitFuncHandler(tbLimiter, func(w http.ResponseWriter, r *http.Request) {
-		serve(config, w, r)
+		serve(config, w, r, regexpPointer)
 	},
 	))
 
-	var err error
 	err = http.ListenAndServeTLS(":"+config.Port, config.PathToCertFile, config.PathToKeyFile, mux)
 	if err != nil {
 		return err

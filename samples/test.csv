@@ -1,3 +1,4 @@
 project,cpu,gpu,avx,distro,kernel,inflatpak
-"""vinegar""","""sample""","""intel386""","""something""","""maybe""","""windows95""","""ditto""","""maybe"""
-"""vinegar""","""sample""","""intel386""","""something""","""maybe""","""windows95""","""ditto""",""""""
+vinegar,sample,intel386,something,maybe,windows95,ditto,maybe
+vinegar,sample,intel386,something,maybe,windows95,ditto,maybe!
+vinegar,sample,intel386,something,maybe,windows95,ditto,maybe
