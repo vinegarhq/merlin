@@ -8,6 +8,7 @@ import (
 	"encoding/csv"
 	"os"
 	"encoding/json"
+	"regexp"
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
@@ -38,7 +39,18 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 
 			// Validate JSON
 			for index, field := range config.SurveyFields {
-				csvBuffer[index] = "\"" + unmarshalledBody[field] + "\""
+				// make sure all fields are filled out and make sure we don't have tampered data
+				match, err := regexp.MatchString(`[,"\\]`, unmarshalledBody[field])
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+
+				if unmarshalledBody[field] == "" || match {
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				} else {
+					csvBuffer[index] = unmarshalledBody[field]
+				}
 			}
 
 			// create CSV handle
@@ -50,9 +62,11 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 
 			// Write the CSV
 			csvWriter := csv.NewWriter(csvHandle)
+			defer csvWriter.Flush()
 			csvWriter.Write(csvBuffer)
 
 			// 202
+			print("success")
 			w.WriteHeader(http.StatusAccepted)
 			return
 		} else {

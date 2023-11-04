@@ -1,0 +1,10 @@
+{
+"project": "vinegar",
+"machineid": "sample",
+"cpu": "intel 386",
+"gpu": "nvidia something 4000",
+"avx": "maybe",
+"distro": "windows 11",
+"kernel": "ditto",
+"inflatpak": "yeah why not"
+}
