@@ -1,5 +1,5 @@
 {
-	"port": "6969",
+	"port": "7000",
 	"pathToCertFile": "server.crt",
 	"pathToKeyFile": "server.key",
 	"beginDate": 1698011077,
