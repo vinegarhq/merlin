@@ -5,16 +5,18 @@ import (
 	"io"
 	"net/http"
 	"time"
+	"encoding/csv"
+	"os"
+	"encoding/json"
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	switch r.Method {
-	case http.MethodGet:
-		w.WriteHeader(http.StatusOK)
-		return
+	// reject all methods other than POST
 	case http.MethodPost:
 		contentType := r.Header.Get("Content-type")
+		// make sure the data is JSON and we are in survey time.
 		if contentType == "application/json" && now.Unix() < config.EndDate && now.Unix() > config.BeginDate {
 			body, err := io.ReadAll(r.Body)
 			defer r.Body.Close()
@@ -22,8 +24,35 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
-			// WRITE THE CSV HERE
-			print(string(body))
+
+			// Unmarshal JSON to a string-string map.
+			unmarshalledBody := make(map[string]string)
+			err = json.Unmarshal([]byte(body), &unmarshalledBody)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			// Create slice array for CSV writing
+			csvBuffer := make([]string, len(config.SurveyFields))
+
+			// Validate JSON
+			for index, field := range config.SurveyFields {
+				csvBuffer[index] = "\"" + unmarshalledBody[field] + "\""
+			}
+
+			// create CSV handle
+			csvHandle, err := os.OpenFile(config.OutputFile, os.O_APPEND|os.O_WRONLY, 0600)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			// Write the CSV
+			csvWriter := csv.NewWriter(csvHandle)
+			csvWriter.Write(csvBuffer)
+
+			// 202
 			w.WriteHeader(http.StatusAccepted)
 			return
 		} else {
@@ -41,6 +70,7 @@ func BeginListener(config *Configuration) error {
 	tbLimiter := tb.NewLimiter(config.RateLimit, nil)
 	tbLimiter.SetMethods([]string{"POST"})
 	//NOTE, THE CONFIG BEHIND PROXIES IS DIFFERENT. YOU NEED TO ADD SETIPLOOKUPS
+	// See tollbooth docs for more info
 	mux.Handle("/", tb.LimitFuncHandler(tbLimiter, func(w http.ResponseWriter, r *http.Request) {
 		serve(config, w, r)
 	},

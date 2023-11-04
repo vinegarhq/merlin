@@ -3,7 +3,7 @@
 	"pathToCertFile": "server.crt",
 	"pathToKeyFile": "server.key",
 	"beginDate": 1698011077,
-	"endDate":   1699011078,
+	"endDate":   2699011078,
 	"outputFile": "./samples/test.csv",
 	"indexFile":  "./samples/index.html",
 	"surveyFields": ["project", "machineid", "cpu", "gpu", "avx", "distro", "kernel", "inflatpak"],
