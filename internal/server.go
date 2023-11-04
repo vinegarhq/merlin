@@ -66,7 +66,6 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 			}
 
 			// 202
-			print("success")
 			w.WriteHeader(http.StatusAccepted)
 			return
 		} else {
