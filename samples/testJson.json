@@ -1,10 +1,8 @@
 {
-"project": "vinegar",
-"machineid": "sample",
-"cpu": "intel 386",
-"gpu": "nvidia something 4000",
-"avx": "maybe",
-"distro": "windows 11",
-"kernel": "ditto",
-"inflatpak": "yeah why not"
+"cpu": "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+"gpu": "amdgpu /sys/class/drm/card1",
+"avx": "true",
+"distro": "Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08",
+"kernel": "6.5.12-300.fc39.x86_64",
+"inflatpak": "true"
 }
