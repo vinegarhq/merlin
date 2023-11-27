@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"fmt"
 )
 
 type Configuration struct {
@@ -16,17 +15,7 @@ type Configuration struct {
 	EndDate        int64    `json:"endDate"`        // end date in epoch
 	OutputFile     string   `json:"outputFile"`     // CSV file to record results to
 	RateLimit      float64  `json:"rateLimit"`      // The number of requests allowed per second
-}
-
-type SurveyFields struct {
-	Project string `json:"project"`
-	Distro	string `json:"distro"`
-	Kernel	string	`json:"kernel"`
-	Flatpak	bool	`json:"flatpak"`
-	CPU	struct {
-		AVX	bool	`json:"avx"`
-		Model	string	`json:"model"`
-	}	`json:"cpu"`
+	SurveyFields   []string `json:"surveyFields"`   // survey fields
 }
 
 func LoadConfiguration(pathToConfig string) (*Configuration, error) {
@@ -57,7 +46,7 @@ func LoadConfiguration(pathToConfig string) (*Configuration, error) {
 	if info.Size() == 0 {
 		writer := csv.NewWriter(csvHandle)
 		defer writer.Flush()
-		err := writer.Write(fmt.Sprintf("%+v", &SurveyFields{}))
+		err := writer.Write(newConfig.SurveyFields)
 		if err != nil {
 			return &Configuration{}, err
 		}

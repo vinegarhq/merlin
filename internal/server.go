@@ -1,3 +1,5 @@
+// test with
+// curl https://127.0.0.1:7000 -k -X POST -H "Content-Type: application/json" -d @testJson.json
 package internal
 
 import (
@@ -8,7 +10,9 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"fmt"
 	"time"
+	"log"
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexpPointer *regexp.Regexp) {
@@ -27,9 +31,10 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 			}
 
 			// Unmarshal JSON to a string-string map.
-			unmarshalledBody := make(map[string]string)
+			unmarshalledBody := make(map[string]interface{})
 			err = json.Unmarshal([]byte(body), &unmarshalledBody)
 			if err != nil {
+				log.Println(err)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
@@ -40,12 +45,13 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 			// Validate JSON
 			for index, field := range config.SurveyFields {
 				// make sure all fields are filled out and make sure we don't have tampered data
-				match := regexpPointer.MatchString(unmarshalledBody[field])
-				if unmarshalledBody[field] == "" || match {
+				singleField := fmt.Sprint(unmarshalledBody[field])
+				match := regexpPointer.MatchString(singleField)
+				if singleField == "" || match {
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				} else {
-					csvBuffer[index] = unmarshalledBody[field]
+					csvBuffer[index] = singleField
 				}
 			}
 
