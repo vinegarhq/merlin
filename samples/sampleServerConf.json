@@ -5,7 +5,6 @@
 	"beginDate": 1698011077,
 	"endDate":   2699011078,
 	"outputFile": "./samples/test.csv",
-	"indexFile":  "./samples/index.html",
 	"surveyFields": ["cpu", "gpu", "avx", "distro", "kernel", "inflatpak"],
 	"rateLimit": 0.2
 }
