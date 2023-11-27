@@ -5,14 +5,13 @@ package internal
 import (
 	"encoding/csv"
 	"encoding/json"
+	"fmt"
 	tb "github.com/didip/tollbooth/v7"
 	"io"
 	"net/http"
 	"os"
 	"regexp"
-	"fmt"
 	"time"
-	"log"
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexpPointer *regexp.Regexp) {
@@ -34,7 +33,6 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 			unmarshalledBody := make(map[string]interface{})
 			err = json.Unmarshal([]byte(body), &unmarshalledBody)
 			if err != nil {
-				log.Println(err)
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
