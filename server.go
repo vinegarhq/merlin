@@ -1,6 +1,6 @@
 // test with
 // curl https://127.0.0.1:7000 -k -X POST -H "Content-Type: application/json" -d @testJson.json
-package internal
+package main
 
 import (
 	"encoding/csv"

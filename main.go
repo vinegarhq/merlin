@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/vinegarhq/merlin/internal"
 	"log"
 	"os"
 )
@@ -17,14 +16,14 @@ func main() {
 		usage()
 	}
 
-	config, err := internal.LoadConfiguration(os.Args[1])
+	config, err := LoadConfiguration(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Println("Loaded configuration successfully.")
 
 	log.Println("Starting HTTP listener...")
-	err = internal.BeginListener(config)
+	err = BeginListener(config)
 	if err != nil {
 		log.Fatal(err)
 	}
