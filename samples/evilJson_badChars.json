@@ -1,0 +1,8 @@
+{
+"cpu": "AMD Ryzen 5 PRO 5650U with Radeon Graphics",
+"gpu": "amdgpu /sys/class/drm/card1",
+"avx": true,
+"distro": "Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08",
+"kernel": ",\n\"",
+"inflatpak": true
+}

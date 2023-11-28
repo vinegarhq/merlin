@@ -48,11 +48,10 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 				// Convert body to string and check for naughty symbols
 				singleField := gv.ToString(unmarshalledBody[field])
 				match := regexpPointer.MatchString(singleField)
-
 				// Make sure that the type of the received data matches the field type.
 				correctType := gv.IsType(unmarshalledBody[field], config.FieldTypes[index])
 
-				if singleField == "" || match || !correctType {
+				if !gv.MinStringLength(singleField, "1") || !gv.MaxStringLength(singleField, "100") || match || !correctType {
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				} else {
@@ -93,7 +92,8 @@ func BeginListener(config *Configuration) error {
 	tbLimiter := tb.NewLimiter(config.RateLimit, nil)
 	tbLimiter.SetMethods([]string{"POST"})
 
-	regexpPointer, err := regexp.Compile(`[^A-Za-z0-9./()]+`)
+	regexpPointer, err := regexp.Compile(`[^A-Za-z0-9._\/() -]+`)
+
 	if err != nil {
 		return err
 	}
