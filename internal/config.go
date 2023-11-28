@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"errors"
 )
 
 type Configuration struct {
@@ -16,6 +17,7 @@ type Configuration struct {
 	OutputFile     string   `json:"outputFile"`     // CSV file to record results to
 	RateLimit      float64  `json:"rateLimit"`      // The number of requests allowed per second
 	SurveyFields   []string `json:"surveyFields"`   // survey fields
+	FieldTypes     []string `json:"fieldTypes"`
 }
 
 func LoadConfiguration(pathToConfig string) (*Configuration, error) {
@@ -29,6 +31,10 @@ func LoadConfiguration(pathToConfig string) (*Configuration, error) {
 	err = json.Unmarshal(cfg, &newConfig)
 	if err != nil {
 		return &Configuration{}, err
+	}
+
+	if len(newConfig.FieldTypes) != len(newConfig.SurveyFields) {
+		return &Configuration{}, errors.New("Number of survey fields and survey types are not the same!")
 	}
 
 	csvHandle, err := os.OpenFile(newConfig.OutputFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0600)

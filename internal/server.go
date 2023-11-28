@@ -5,9 +5,9 @@ package internal
 import (
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
 	tb "github.com/didip/tollbooth/v7"
 	"io"
+	gv "github.com/asaskevich/govalidator"
 	"net/http"
 	"os"
 	"regexp"
@@ -15,6 +15,7 @@ import (
 )
 
 func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexpPointer *regexp.Regexp) {
+	// Caution: don't access resource from multiple serves! it is not thread safe...
 	now := time.Now()
 	switch r.Method {
 	// reject all methods other than POST
@@ -43,16 +44,21 @@ func serve(config *Configuration, w http.ResponseWriter, r *http.Request, regexp
 			// Validate JSON
 			for index, field := range config.SurveyFields {
 				// make sure all fields are filled out and make sure we don't have tampered data
-				singleField := fmt.Sprint(unmarshalledBody[field])
+
+				// Convert body to string and check for naughty symbols
+				singleField := gv.ToString(unmarshalledBody[field])
 				match := regexpPointer.MatchString(singleField)
-				if singleField == "" || match {
+
+				// Make sure that the type of the received data matches the field type.
+				correctType := gv.IsType(unmarshalledBody[field], config.FieldTypes[index])
+
+				if singleField == "" || match || !correctType {
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				} else {
 					csvBuffer[index] = singleField
 				}
 			}
-
 			// create CSV handle
 			csvHandle, err := os.OpenFile(config.OutputFile, os.O_APPEND|os.O_WRONLY, 0600)
 			if err != nil {
