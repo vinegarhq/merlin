@@ -87,7 +87,7 @@ func BeginListener(config *Configuration) error {
 	tbLimiter := tb.NewLimiter(config.RateLimit, nil)
 	tbLimiter.SetMethods([]string{"POST"})
 
-	regexpPointer, err := regexp.Compile(`[,"\\]`)
+	regexpPointer, err := regexp.Compile(`[^A-Za-z0-9./()]+`)
 	if err != nil {
 		return err
 	}
