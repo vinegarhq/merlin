@@ -1,0 +1,9 @@
+{
+	"project": "vinegar",
+	"distro": "KISS Linux",
+	"kernel": "6.5.9acid",
+	"flatpak": false,
+	"avx": true,
+	"cpu": "13th Gen Intel(R) Core(TM) i5-13600K",
+	"gpu": "i915,amdgpu"
+}
