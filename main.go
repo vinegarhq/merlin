@@ -63,6 +63,8 @@ func main() {
 			return
 		}
 
+		data.Sanitize()
+
 		log.Println("Recieved data, writing to CSV output file")
 
 		defer csvw.Flush()

@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -26,7 +28,18 @@ var (
 	ErrDataBadCPULength          = errors.New("cpu given has bad length")
 )
 
-var CSVHeader = []string{"project", "distro", "kernel", "flatpak", "avx", "cpu", "gpus"}
+// Generate the CSV Header based on the JSON tags in the Data struct at run-time
+var CSVHeader = func() (h []string) {
+	var d Data
+	t := reflect.TypeOf(d)
+
+	for i := 0; i < t.NumField(); i++ {
+		f := t.Field(i)
+		h = append(h, f.Tag.Get("json"))
+	}
+
+	return
+}()
 
 func (d Data) CSV() []string {
 	return []string{
@@ -36,12 +49,35 @@ func (d Data) CSV() []string {
 	}
 }
 
+func (d *Data) Sanitize() {
+	reg := regexp.MustCompile("[^a-zA-Z0-9@*().\\-,\\s]+")
+	r := reflect.ValueOf(d).Elem()
+
+	// Loops over all string members in Data and sanitizes them
+	for i := 0; i < r.NumField(); i++ {
+		f := r.Field(i)
+		// GPU has it's own filter in Validate(), it's index in the struct
+		// is the last one
+		if i+1 != r.NumField() && f.Kind() == reflect.String {
+			og := f.String()
+			s := reg.ReplaceAllString(og, "")
+			if s != og {
+				log.Printf("Sanitized %s", og)
+			}
+			f.SetString(s)
+		}
+	}
+}
+
 func (d Data) Validate() error {
+	// Length of CPU is a different value
 	for _, m := range []string{d.Project, d.Distro, d.Kernel, d.GPUs} {
 		// Reasonable limit
 		if m == "" || len(m) > 256 {
 			return ErrDataBadLength
 		}
+
+		// Sanitize all fields by making
 	}
 
 	// The flatpak runtime always modifies the os-release file

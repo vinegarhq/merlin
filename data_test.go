@@ -6,6 +6,18 @@ import (
 	"testing"
 )
 
+func TestDataSanitization(t *testing.T) {
+	d := Data{CPU: "meow meow $$$$$", GPUs: "meow meow $$$$$"}
+	d.Sanitize()
+
+	if d.CPU != "meow meow " {
+		t.Fatalf("sanitization did not apply")
+	}
+	if d.GPUs != "meow meow $$$$$" {
+		t.Fatalf("sanitization should not apply to GPUs")
+	}
+}
+
 func TestDataValidation(t *testing.T) {
 	datas := []struct {
 		Data  Data
