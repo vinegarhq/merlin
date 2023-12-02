@@ -3,40 +3,62 @@ package main
 import (
 	"encoding/csv"
 	"encoding/json"
-	"fmt"
+	"flag"
 	"log"
 	"net/http"
 	"os"
+
+	"golang.org/x/time/rate"
 )
 
 func main() {
-	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "usage: merlin output")
-		os.Exit(1)
+	cf := flag.String("config", "", "Path to configuration file")
+	flag.Parse()
+
+	if *cf == "" {
+		log.Fatal("cannot run without configuration file")
 	}
 
-	f, err := os.OpenFile(os.Args[1], os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0o644)
+	cfg, err := LoadConfig(*cf)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+
+	log.Fatal(serve(&cfg))
+}
+
+func serve(cfg *Config) error {
+	f, err := os.OpenFile(cfg.OutputFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0o600)
+	if err != nil {
+		return err
 	}
 	defer f.Close()
 
 	fi, err := f.Stat()
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	csvw := csv.NewWriter(f)
 
 	if fi.Size() < 1 {
 		if err := csvw.Write(CSVHeader); err != nil {
-			panic(err)
+			return err
 		}
 
 		csvw.Flush()
+	} else {
+		log.Println("Warning: will not write CSV header to existing output file")
 	}
 
+	limiter := rate.NewLimiter(rate.Limit(cfg.RateLimit), 1)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		if !limiter.Allow() {
+			w.WriteHeader(http.StatusTooManyRequests)
+			return
+		}
+
 		if req.Method != http.MethodPost {
 			log.Printf("Client attempted %s", req.Method)
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -79,8 +101,5 @@ func main() {
 
 	log.Println("Serving")
 
-	err = http.ListenAndServeTLS(":443", "server.crt", "server.key", nil)
-	if err != nil {
-		panic(err)
-	}
+	return http.ListenAndServeTLS(":"+cfg.Port, "server.crt", "server.key", nil)
 }

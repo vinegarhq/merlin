@@ -1,0 +1,7 @@
+{
+	"port": "7000",
+	"cert_file": "server.crt",
+	"key_file": "server.key",
+	"output_file": "output.csv",
+	"rate_limit": 0.8
+}

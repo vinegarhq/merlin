@@ -1,4 +1,4 @@
 merlin
 *.csv
-server.crt
-server.key
+*.crt
+*.key

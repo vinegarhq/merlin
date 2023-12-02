@@ -50,7 +50,7 @@ func (d Data) CSV() []string {
 }
 
 func (d *Data) Sanitize() {
-	reg := regexp.MustCompile("[^a-zA-Z0-9@*().\\-,\\s]+")
+	reg := regexp.MustCompile(`[^a-zA-Z0-9@*().\-,\s]+`)
 	r := reflect.ValueOf(d).Elem()
 
 	// Loops over all string members in Data and sanitizes them
