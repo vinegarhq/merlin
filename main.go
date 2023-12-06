@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 
-	"golang.org/x/time/rate"
+	"github.com/didip/tollbooth/v7"
 )
 
 func main() {
@@ -51,14 +51,10 @@ func serve(cfg *Config) error {
 		log.Println("Warning: will not write CSV header to existing output file")
 	}
 
-	limiter := rate.NewLimiter(rate.Limit(cfg.RateLimit), 1)
+	limiter := tollbooth.NewLimiter(cfg.RateLimit, nil)
+	limiter.SetMethods([]string{"POST"})
 
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		if !limiter.Allow() {
-			w.WriteHeader(http.StatusTooManyRequests)
-			return
-		}
-
+	http.Handle("/", tollbooth.LimitFuncHandler(limiter, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
 			log.Printf("Client attempted %s", req.Method)
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -97,7 +93,7 @@ func serve(cfg *Config) error {
 		}
 
 		w.WriteHeader(http.StatusAccepted)
-	})
+	}))
 
 	log.Println("Serving")
 
