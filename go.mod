@@ -2,4 +2,6 @@ module github.com/vinegarhq/merlin
 
 go 1.21.4
 
-require golang.org/x/time v0.5.0
+require github.com/didip/tollbooth/v7 v7.0.1
+
+require github.com/go-pkgz/expirable-cache v1.0.0 // indirect
