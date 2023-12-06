@@ -81,7 +81,7 @@ func serve(cfg *Config) error {
 
 		if err := data.Validate(); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("Client gave bad data: %s", err)
+			log.Println("Client gave bad data")
 			return
 		}
 
@@ -92,7 +92,7 @@ func serve(cfg *Config) error {
 		defer csvw.Flush()
 		if err := csvw.Write(data.CSV()); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
-			log.Printf("unable to write to csv: %s", err)
+			log.Printf("Unable to write to csv: %s", err)
 			return
 		}
 
