@@ -75,7 +75,7 @@ func serve(cfg *Config) error {
 		var data Data
 		if err := dec.Decode(&data); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			log.Printf("Client gave invalid decoded data: %s", err)
+			log.Printf("Failed to decode data: %s", err)
 			return
 		}
 
