@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -50,7 +49,7 @@ func (d Data) CSV() []string {
 }
 
 func (d *Data) Sanitize() {
-	reg := regexp.MustCompile(`[^a-zA-Z0-9@*().\-,\s]+`)
+	reg := regexp.MustCompile(`[^a-zA-Z0-9@*().\-\_ ]+`)
 	r := reflect.ValueOf(d).Elem()
 
 	// Loops over all string members in Data and sanitizes them
@@ -59,12 +58,7 @@ func (d *Data) Sanitize() {
 		// GPU has it's own filter in Validate(), it's index in the struct
 		// is the last one
 		if i+1 != r.NumField() && f.Kind() == reflect.String {
-			og := f.String()
-			s := reg.ReplaceAllString(og, "")
-			if s != og {
-				log.Printf("Sanitized %s", og)
-			}
-			f.SetString(s)
+			f.SetString(reg.ReplaceAllString(f.String(), ""))
 		}
 	}
 }

@@ -7,10 +7,10 @@ import (
 )
 
 func TestDataSanitization(t *testing.T) {
-	d := Data{CPU: "meow meow $$$$$", GPUs: "meow meow $$$$$"}
+	d := Data{CPU: "meow meow\n\n", GPUs: "meow meow $$$$$"}
 	d.Sanitize()
 
-	if d.CPU != "meow meow " {
+	if d.CPU != "meow meow" {
 		t.Fatalf("sanitization did not apply")
 	}
 	if d.GPUs != "meow meow $$$$$" {
