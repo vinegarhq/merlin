@@ -1,6 +1,0 @@
-cpu,gpu,avx,distro,kernel,inflatpak
-AMD Ryzen 5 PRO 5650U with Radeon Graphics,amdgpu /sys/class/drm/card1,true,Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08,6.5.12-300.fc39.x86_64,true
-AMD Ryzen 5 PRO 5650U with Radeon Graphics,amdgpu /sys/class/drm/card1,true,Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08,6.5.12-300.fc39.x86_64,true
-AMD Ryzen 5 PRO 5650U with Radeon Graphics,amdgpu /sys/class/drm/card1,true,Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08,6.5.12-300.fc39.x86_64,true
-AMD Ryzen 5 PRO 5650U with Radeon Graphics,amdgpu /sys/class/drm/card1,true,Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08,6.5.12-300.fc39.x86_64,true
-AMD Ryzen 5 PRO 5650U with Radeon Graphics,amdgpu /sys/class/drm/card1,true,Freedesktop.org SDK 23.08 (Flatpak runtime) 23.08,6.5.12-300.fc39.x86_64,true
