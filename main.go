@@ -97,5 +97,5 @@ func serve(cfg *Config) error {
 
 	log.Println("Serving")
 
-	return http.ListenAndServeTLS(":"+cfg.Port, "server.crt", "server.key", nil)
+	return http.ListenAndServeTLS(":"+cfg.Port, cfg.CertFile, cfg.KeyFile, nil)
 }
