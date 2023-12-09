@@ -80,7 +80,8 @@ func (d Data) Validate() error {
 	}
 
 	// GPU driver list must be comma seperated with alphanumerical characters
-	if mgpu, _ := regexp.MatchString(`^[a-zA-Z0-9,]+$`, d.GPUs); !mgpu {
+	// edit: turns out some people have simple-framebuffer as a GPU option, so adding hyphen to filter
+	if mgpu, _ := regexp.MatchString(`^[a-zA-Z0-9,-]+$`, d.GPUs); !mgpu {
 		return fmt.Errorf("%w: %s", ErrDataBadGPUs, d.GPUs)
 	}
 
