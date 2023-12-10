@@ -43,7 +43,7 @@ var CSVHeader = func() (h []string) {
 func (d Data) CSV() []string {
 	return []string{
 		d.Project, d.Distro, d.Kernel,
-		strconv.FormatBool(d.AVX), strconv.FormatBool(d.Flatpak),
+		strconv.FormatBool(d.Flatpak), strconv.FormatBool(d.AVX),
 		d.CPU, d.GPUs,
 	}
 }
