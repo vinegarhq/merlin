@@ -3,5 +3,7 @@
 	"cert_file": "server.crt",
 	"key_file": "server.key",
 	"output_file": "output.csv",
-	"rate_limit": 0.8
+	"rate_limit": 0.8,
+	"cf_mode": true,
+	"mtls_file": "mtls.crt"
 }

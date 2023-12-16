@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/csv"
 	"encoding/json"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -28,6 +31,7 @@ func main() {
 }
 
 func serve(cfg *Config) error {
+	// CSV Setup
 	f, err := os.OpenFile(cfg.OutputFile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0o600)
 	if err != nil {
 		return err
@@ -51,9 +55,36 @@ func serve(cfg *Config) error {
 		log.Println("Warning: will not write CSV header to existing output file")
 	}
 
+	// Limiter setup
 	limiter := tollbooth.NewLimiter(cfg.RateLimit, nil)
 	limiter.SetMethods([]string{"POST"})
+	if cfg.CFMode {
+		limiter.SetIPLookups([]string{"CF-Connecting-IP"})
+	}
 
+	tlsConfig := &tls.Config{}
+
+	// mTLS optional setup
+	if cfg.MTLSFile != "" {
+		mtlsCert, err := ioutil.ReadFile(cfg.MTLSFile)
+		if err != nil {
+			return err
+		}
+		certPool := x509.NewCertPool()
+		certPool.AppendCertsFromPEM(mtlsCert)
+
+		tlsConfig = &tls.Config{
+			ClientCAs:  certPool,
+			ClientAuth: tls.RequireAndVerifyClientCert,
+		}
+	}
+
+	httpServer := &http.Server{
+		Addr:      ":" + cfg.Port,
+		TLSConfig: tlsConfig,
+	}
+
+	// Handler setup
 	http.Handle("/", tollbooth.LimitFuncHandler(limiter, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
 			log.Printf("Client attempted %s", req.Method)
@@ -97,5 +128,7 @@ func serve(cfg *Config) error {
 
 	log.Println("Serving")
 
-	return http.ListenAndServeTLS(":"+cfg.Port, cfg.CertFile, cfg.KeyFile, nil)
+	// Start HTTP
+	log.Println(httpServer.TLSConfig.Rand)
+	return httpServer.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile)
 }

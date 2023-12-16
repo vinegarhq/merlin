@@ -7,11 +7,28 @@ import (
 )
 
 type Config struct {
-	Port       string  `json:"port"`
-	CertFile   string  `json:"cert_file"`
-	KeyFile    string  `json:"key_file"`
-	OutputFile string  `json:"output_file"`
-	RateLimit  float64 `json:"rate_limit"` // per second
+	// Port to use
+	Port string `json:"port"`
+
+	// Certificate (pubkey) file to use
+	CertFile string `json:"cert_file"`
+
+	// Key (privatekey) file to use
+	KeyFile string `json:"key_file"`
+
+	// Output CSV file
+	OutputFile string `json:"output_file"`
+
+	// Requests to allow per second
+	RateLimit float64 `json:"rate_limit"`
+
+	// Setting to change where tollbooth checks for IPs.
+	// It is CRITICAL that you set this properly, otherwise you will blacklist a cloudflare node.
+	CFMode bool `json:"cf_mode"`
+
+	// mTLS cert location for Cloudflare. (PEM ONLY)
+	// Automatically enables mTLS when provided.
+	MTLSFile string `json:"mtls_file"`
 }
 
 func LoadConfig(name string) (Config, error) {
