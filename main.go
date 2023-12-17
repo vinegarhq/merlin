@@ -59,7 +59,7 @@ func serve(cfg *Config) error {
 	limiter := tollbooth.NewLimiter(cfg.RateLimit, nil)
 	limiter.SetMethods([]string{"POST"})
 	if cfg.CFMode {
-		limiter.SetIPLookups([]string{"CF-Connecting-IP"})
+		limiter.SetIPLookups([]string{"CF-Connecting-IP", "X-Forwarded-For", "X-Real-IP", "RemoteAddr"})
 	}
 
 	tlsConfig := &tls.Config{}
