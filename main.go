@@ -10,7 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
-
+	"fmt"
 	"github.com/didip/tollbooth/v7"
 )
 
@@ -59,7 +59,7 @@ func serve(cfg *Config) error {
 	limiter := tollbooth.NewLimiter(cfg.RateLimit, nil)
 	limiter.SetMethods([]string{"POST"})
 	if cfg.CFMode {
-		limiter.SetIPLookups([]string{"CF-Connecting-IP", "X-Forwarded-For", "X-Real-IP", "RemoteAddr"})
+		limiter.SetIPLookups([]string{"CF-Connecting-IP", "X-Forwarded-For", "RemoteAddr", "X-Real-IP"})
 	}
 
 	tlsConfig := &tls.Config{}
@@ -129,6 +129,6 @@ func serve(cfg *Config) error {
 	log.Println("Serving")
 
 	// Start HTTP
-	log.Println(httpServer.TLSConfig.Rand)
+	fmt.Printf("%+v\n", httpServer)
 	return httpServer.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile)
 }
