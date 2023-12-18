@@ -5,13 +5,13 @@ import (
 	"crypto/x509"
 	"encoding/csv"
 	"encoding/json"
+	"errors"
 	"flag"
+	"github.com/didip/tollbooth/v7"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"github.com/didip/tollbooth/v7"
-	"errors"
 )
 
 func main() {
