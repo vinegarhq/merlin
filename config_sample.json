@@ -5,5 +5,5 @@
 	"output_file": "output.csv",
 	"rate_limit": 0.8,
 	"cf_mode": true,
-	"mtls_file": "mtls.crt"
+	"mtls_file": "mtls.pem"
 }

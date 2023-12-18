@@ -10,8 +10,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"fmt"
 	"github.com/didip/tollbooth/v7"
+	"errors"
 )
 
 func main() {
@@ -64,14 +64,20 @@ func serve(cfg *Config) error {
 
 	tlsConfig := &tls.Config{}
 
-	// mTLS optional setup
+	/* mTLS optional setup
+	   Note: This is NOT the cert/key for the server.t
+	   In the case of cloudflare, it will come from:
+	   https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem
+	*/
 	if cfg.MTLSFile != "" {
 		mtlsCert, err := ioutil.ReadFile(cfg.MTLSFile)
 		if err != nil {
 			return err
 		}
 		certPool := x509.NewCertPool()
-		certPool.AppendCertsFromPEM(mtlsCert)
+		if success := certPool.AppendCertsFromPEM(mtlsCert); !success {
+			return errors.New("Failed to add cert to pool")
+		}
 
 		tlsConfig = &tls.Config{
 			ClientCAs:  certPool,
@@ -129,6 +135,5 @@ func serve(cfg *Config) error {
 	log.Println("Serving")
 
 	// Start HTTP
-	fmt.Printf("%+v\n", httpServer)
 	return httpServer.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile)
 }
