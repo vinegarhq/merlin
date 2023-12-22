@@ -94,6 +94,7 @@ func serve(cfg *Config) error {
 	http.Handle("/", tollbooth.LimitFuncHandler(limiter, func(w http.ResponseWriter, req *http.Request) {
 		// Handle GET immediately and return.
 		if req.Method == http.MethodGet {
+			w.Header().Set("Content-Type", "text/csv")
 			http.ServeFile(w, req, cfg.OutputFile)
 			return
 		}
