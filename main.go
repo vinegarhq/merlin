@@ -94,14 +94,7 @@ func serve(cfg *Config) error {
 	http.Handle("/", tollbooth.LimitFuncHandler(limiter, func(w http.ResponseWriter, req *http.Request) {
 		// Handle GET immediately and return.
 		if req.Method == http.MethodGet {
-			fBytes, err := ioutil.ReadFile(cfg.OutputFile)
-			if err != nil {
-				log.Printf("Unable to return CSV: %s", err)
-				w.WriteHeader(http.StatusInternalServerError)
-			}
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "application/octent-stream")
-			w.Write(fBytes)
+			http.ServeFile(w, req, cfg.OutputFile)
 			return
 		}
 		//
