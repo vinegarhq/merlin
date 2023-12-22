@@ -65,7 +65,7 @@ func serve(cfg *Config) error {
 	tlsConfig := &tls.Config{}
 
 	/* mTLS optional setup
-	   Note: This is NOT the cert/key for the server.t
+	   Note: This is NOT the cert/key for the server.
 	   In the case of cloudflare, it will come from:
 	   https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem
 	*/
@@ -92,6 +92,20 @@ func serve(cfg *Config) error {
 
 	// Handler setup
 	http.Handle("/", tollbooth.LimitFuncHandler(limiter, func(w http.ResponseWriter, req *http.Request) {
+		// Handle GET immediately and return.
+		if req.Method == http.MethodGet {
+			fBytes, err := ioutil.ReadFile(cfg.OutputFile)
+			if err != nil {
+				log.Printf("Unable to return CSV: %s", err)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/octent-stream")
+			w.Write(fBytes)
+			return
+		}
+		//
+
 		if req.Method != http.MethodPost {
 			log.Printf("Client attempted %s", req.Method)
 			w.WriteHeader(http.StatusMethodNotAllowed)
